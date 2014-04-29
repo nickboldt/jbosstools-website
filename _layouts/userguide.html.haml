@@ -1,0 +1,41 @@
+---
+layout: project
+tab: docs
+---
+- page.title = "#{page.product_name} #{page.product_version}"
+- aggregated_userguide_page = get_aggregate_userguide_page(site, page.product_id, page.product_version)
+- current_userguide_page = get_current_version_userguide_page(site, page.product_id, page.product_version)
+.row-fluid
+  .span12.alert.alert-warning><
+    %span><= "Heads Up! This is an individual N&N page that is also aggregated in &nbsp;"
+    %a{:href=>aggregated_userguide_page.output_path}>< #{aggregated_userguide_page.product_version}
+    
+.row-fluid.affixedContent
+  .span3.bs-docs-sidebar
+    %ul.nav.nav-list.bs-docs-sidenav
+      %li{:class=>("selected expanded")}
+        %a{:href=>"#"}
+          #{page.product_version}
+          - unless page.build_type_label.nil?
+            %span{:class=>"label label_#{current_userguide_page.build_type_label}"}
+              #{site.labels[current_userguide_page.build_type_label]}
+        %ul.nav.nav-nested.components
+          %li.component{:class=>"active"}
+            %a{:href=>"#"} #{site.components[page.component_id].name}
+    
+             
+  .span9.scrolledContent
+    - download_page = site.download_pages[page.product_id][page.product_version]
+    - unless download_page.nil?
+      %p.direct-download
+        %a.btn.btn-primary{:href => relative(download_page.output_path)} 
+          %i.icon-download
+          Download
+      
+    - default_imagesdir = site.asciidoctor.attributes['imagesdir']
+    %div.component-wrapper{:id=>component_id}
+      %h1.component-header #{site.components[page.component_id].name}
+      - site.asciidoctor.attributes['imagesdir'] = relative(Pathname.new(page.output_path).parent.to_s)
+      #{content}
+    - site.asciidoctor.attributes['imagesdir'] = default_imagesdir
+    

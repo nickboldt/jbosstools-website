@@ -1,0 +1,48 @@
+---
+layout: project
+title: User Guide
+tab: docs
+status: yellow
+issues: [TOOLSDOC-492]
+---
+.row-fluid
+  .hero-unit.center
+    %h1 
+      User Guide 
+    %p
+      User Guide for #{site.products[:jbt_core].name} and
+      #{site.products[:jbt_is].name} 
+
+- count = 0    
+- for product_id in [:jbt_core, :jbt_is] do 
+  - unless site.userguide_pages[product_id].nil?
+    - count += site.userguide_pages[product_id].values.select{|userguide_page| !userguide_page.build_type_label.nil?}.length
+  
+- spanValue = "span" << (12/count).to_s
+
+.row-fluid.userguide-index.flex
+  - for product_id in [:jbt_core, :jbt_is, :devstudio, :devstudio_is] do 
+    - unless site.userguide_pages[product_id].nil?
+      - site.userguide_pages[product_id].values.select{|userguide_page| !userguide_page.build_type_label.nil?}.sort{|p1, p2| p2.product_version <=> p1.product_version}.each do |userguide_page|
+        %section{:class=>spanValue}
+          %header
+            %h3 
+              %a{:href=>userguide_page.output_path} #{site.products[product_id].name} #{userguide_page.product_version}
+              - unless userguide_page.build_type_label.nil?
+                %span{:class=>"label label_#{userguide_page.build_type_label}"}
+                  #{site.labels[userguide_page.build_type_label]}
+          
+          .item.center
+            - relevant_components = userguide_page.component_news.keys.select{|k| k != "general"}
+            - if relevant_components.length > 0
+              %p
+                User Guide for #{site.products[product_id].name} #{userguide_page.product_version}, including:
+              %ul.double
+                - relevant_components.each_with_index do |component_id, index|
+                  %li 
+                    %a{:href=>"#{userguide_page.output_path}##{component_id}"} #{site.components[component_id].name}
+            - else
+              %p User Guide for #{site.products[product_id].name} #{userguide_page.product_version}.
+          %footer.center
+            %a.btn.btn-small{:href=>userguide_page.output_path} Read more &raquo;
+      

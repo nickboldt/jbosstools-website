@@ -20,12 +20,17 @@ require 'features'
 require 'products_helper'
 require 'whatsnew'
 require 'whatsnew_helper'
+require 'userguide'
+require 'userguide_helper'
 require 'downloads'
 require 'downloads_helper'
 require 'myposts'
 require 'videos'
 require 'uri_helper'
 require 'build_info'
+
+#TODO turn off debugging
+require 'debugger'
 
 Awestruct::Extensions::Pipeline.new do
   
@@ -59,7 +64,11 @@ Awestruct::Extensions::Pipeline.new do
   # Needs to be after Indexifier to get the linking correct; 
   extension Awestruct::Extensions::Whatsnew.new('/documentation/whatsnew', '/documentation/whatsnew')
   helper Awestruct::Extensions::WhatsnewHelper
-  
+  # Needs to be after Indexifier to get the linking correct; 
+  debugger
+  extension Awestruct::Extensions::Userguide.new('/documentation/userguide', '/documentation/userguide')
+  helper Awestruct::Extensions::UserguideHelper
+
   # Download needs to be after whatsnew, to link from download to whatsnew
   extension Awestruct::Extensions::Downloads.new
   helper Awestruct::Extensions::DownloadsHelper
@@ -75,8 +84,6 @@ Awestruct::Extensions::Pipeline.new do
   extension Awestruct::Extensions::Atomizer.new(:posts, '/blog/news.atom')
   
   helper Awestruct::Extensions::GoogleAnalytics
-  
-  
   
 end
 

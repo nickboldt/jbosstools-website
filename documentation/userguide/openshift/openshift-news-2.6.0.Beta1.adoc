@@ -1,0 +1,19 @@
+= OpenShift User Guide
+:page-layout: whatsnew
+:page-component_id: openshift
+:page-component_version: 2.6.0.Beta1
+:page-product_id: jbt_core 
+:page-product_version: 4.2.0.Beta1
+
+== User Guide 
+=== Section 1
+
+Content 1
+
+=== Section 2
+
+Content 2
+
+image:../../whatsnew/openshift/images/create-new-or-import-existing.png[]
+
+related_jira::TOOLSDOC-492[]

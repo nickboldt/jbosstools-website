@@ -1,0 +1,85 @@
+---
+layout: project
+tab: docs
+---
+- page.title = "#{page.product_name} #{page.product_version}"
+- component_ids = page.component_news.keys.sort{|x,y| site.components[x].name <=> site.components[y].name}
+
+- if is_stable_version(page.product_version)
+  -# Banner for .Final versions (it's an aggregate of non-.Final pages)
+  - related_userguide_pages = get_related_userguide_pages(site, page.product_id, page.product_version)
+  - unless related_userguide_pages.empty?
+    .row-fluid
+      .span12.alert.alert-info><
+        %span><= "Heads Up! This is a summary page of all New & Noteworthy of #{page.product_name}&nbsp;"
+        - related_userguide_pages.keys.sort{|x,y| x <=> y}.each_with_index do |version, index|
+          - if index == related_userguide_pages.length - 1
+            %span><= "&nbsp;and&nbsp;" 
+          %a{:href=>related_userguide_pages[version].output_path}><= version
+          - if index < related_userguide_pages.length - 2
+            %span><= ",&nbsp;" 
+- else 
+  -# Banner for non-.Final version pages which are related a an existing .Final version page
+  - final_userguide_page = get_stable_version_userguide_page(site, page.product_id, page.product_version)
+  - unless final_userguide_page.nil?
+    .row-fluid
+      .span12.alert.alert-warning><
+        %span><= "Heads Up! This is the archived New & Noteworthy page is also part of of #{page.product_name}&nbsp;"
+        %a{:href=>final_userguide_page.output_path}><= final_userguide_page.product_version
+
+
+.row-fluid.affixedContent
+  .span3.bs-docs-sidebar
+    %ul.nav.nav-list.bs-docs-sidenav
+      - if (page.product_active == true)
+        - userguide_pages = get_active_userguide_pages(site, page.product_id, page.product_version)
+        -# sorting active versions in reverse order
+        - userguide_pages.sort{|x,y| y.product_version <=> x.product_version}.each_with_index do |userguide_page, index|
+          %li{:class=>("selected expanded" if userguide_page.product_version == page.product_version)}
+            %a{:href=>relative(userguide_page.output_path)}
+              #{userguide_page.product_version}
+              - unless userguide_page.build_type_label.nil?
+                %span{:class=>"label label_#{userguide_page.build_type_label}"}
+                  #{site.labels[userguide_page.build_type_label]}
+            - if userguide_page.product_version == page.product_version
+              %ul.nav.nav-nested.components
+                - component_ids.each_with_index do |component_id, index|
+                  %li.component{:class=>(index == 0 ? "active" : "")}
+                    %a{:href=>"##{component_id}"} #{site.components[component_id].name}
+            - if index < (userguide_pages.length - 1)
+              %li.separator
+      - else
+        %li{:class=>("selected expanded")}
+          %a{:href=>relative(page.output_path)}
+            #{page.product_version}
+            - unless page.build_type_label.nil?
+              %span{:class=>"label label_#{page.build_type_label}"}
+                #{site.labels[page.build_type_label]}
+          %ul.nav.nav-nested.components
+            - component_ids.each_with_index do |component_id, index|
+              %li.component{:class=>(index == 0 ? "active" : "")}
+                %a{:href=>"##{component_id}"} #{site.components[component_id].name}
+      -# link to older N&N
+      %li
+        %a{:href=>"http://docs.jboss.org/tools/userguide/"} Previous Versions
+      
+            
+  .span9.scrolledContent
+    - download_page = site.download_pages[page.product_id][page.product_version]
+    - unless download_page.nil?
+      %p.direct-download
+        %a.btn.btn-primary{:href => relative(download_page.output_path)} 
+          %i.icon-download
+          Download #{page.product_name} #{page.product_version}
+      
+    - default_imagesdir = site.asciidoctor.attributes['imagesdir']
+    - component_ids.each do |component_id|
+      - component_news = page.component_news[component_id]
+      %div.component-wrapper{:id=>component_id}
+        %h1.component-header #{site.components[component_id].name}
+        - component_news.each do |n|
+          - site.asciidoctor.attributes['imagesdir'] = relative(Pathname.new(n.output_path).parent.to_s)
+          #{n.content}
+      %hr
+    - site.asciidoctor.attributes['imagesdir'] = default_imagesdir
+    

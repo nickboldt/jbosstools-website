@@ -42,6 +42,10 @@ tab: downloads
       - unless page.build_info.release_notes_url.nil?
         %a{:href=>relative(page.build_info.release_notes_url)} Release Notes 
         &#124;
+      -# JBoss Tools has a User Guide
+      - unless page.build_info.userguide_url.nil?
+        %a{:href=>relative(page.build_info.userguide_url)} User Guide 
+        &#124;
       %a{:href=>relative("/downloads/installation.html")} Installation
       
     - if page.build_info.build_type_label == "stable"
