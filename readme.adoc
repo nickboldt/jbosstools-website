@@ -150,7 +150,7 @@ completely regenerate the site via:
 
 [source]
 ----
-rake clean[all] preview
+rake clean preview
 ----
 === If serving the site is slow...
 
